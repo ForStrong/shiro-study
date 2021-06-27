@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+    <!--
+    targetRuntime="MyBatis3Simple" 生成简单的增删改查代码
+        如果指定为Mybatis3 MBG会生成和Example相关的对象和方法（可以使用该对象和其方法生成sql语句）
+    defaultModelType="flat" 一张表生成一个实体类
+    -->
+    <context id="MySqlContext" targetRuntime="MyBatis3Simple" defaultModelType="flat">
+        <!--
+        配置前后分隔符如表的名字为 user info
+        那么sql语句会加分隔符 `user info` 这样不会报错
+        -->
+        <property name="beginningDelimiter" value="`"/>
+        <property name="endingDelimiter" value="`"/>
+        <property name="javaFileEncoding" value="UTF-8"/>
+        <!--
+        name="suppressDate" 阻止生成包含时间戳的注释
+        name="addRemarkComments" 是否添加数据库表的备注信息
+        也可以自定义commentGenerator，官网上找
+        -->
+        <commentGenerator>
+            <property name="suppressDate" value="true"/>
+            <property name="addRemarkComments" value="true"/>
+        </commentGenerator>
+        <!--jdbcConnection ： 指定MBG要连接的数据库的信息
+        这个标签下如果包含property的标签，那么该标签的属性会添加到jdbc驱动的属性中
+        -->
+        <jdbcConnection driverClass="com.mysql.cj.jdbc.Driver"
+                        connectionURL="jdbc:mysql://localhost:3306/mybatis_study?useUnicode=true&amp;characterEncoding=utf8&amp;useSSL=true&amp;useJDBCCompliantTimezoneShift=true&amp;useLegacyDatetimeCode=false&amp;serverTimezone=UTC&amp;serverTimezone=GMT%2B8"
+                        userId="root"
+                        password="123456">
+            <!--MySql不能正确支持SQL catalogs和schema。如果 在MySql中运行create schema命令，它实际上会创建一个数据库 - 并且JDBC驱动程序将其作为catalogs报告回来。但是MySql语法不支持标准的catalog…table SQL语法。
+            因此，最好不要在generator 配置中指定catalog或schema。只需指定表名并在JDBC URL中指定数据库即可。
+            如果您使用的是mysql-connector-java的8.x版，生成器可能会尝试为MySql information schemas中的表生成代码。要禁用此行为，请将属性“nullCatalogMeansCurrent = true”添加到JDBC URL。
+            -->
+            <property name="nullCatalogMeansCurrent" value="true"/>
+        </jdbcConnection>
+        <!--
+        targetPackage="com.yogurt.model" model生成包的路径
+        targetProject="src\main\java" 项目路径
+        -->
+        <javaModelGenerator targetPackage="com.yogurt.springbootshiro.model" targetProject="src\main\java">
+            <!--
+            name="trimStrings" 判断是否对数据库查询结果进行trim操作 默认false 改为true后
+            public void setCountryCode(String countryCode) {
+                this.countryCode = countryCode == null ? null : countryCode.trim();
+            }
+            -->
+            <property name="trimStrings" value="true" />
+        </javaModelGenerator>
+        
+        <sqlMapGenerator targetPackage="mapper"  targetProject="src\main\resources"/>
+        <!--
+        配置Java客户端生成器（ Mapper接口）的属性
+        type="XMLMAPPER" mapper接口与mapper.xml文件完全分离，易于维护，推荐使用
+        -->
+        <javaClientGenerator type="XMLMAPPER" targetPackage="com.yogurt.springbootshiro.dao"  targetProject="src\main\java"/>
+        
+        <!-- table可以有多个,每个数据库中的表都可以写一个table，tableName表示要匹配的数据库表
+        ,也可以在tableName属性中通过使用%通配符来匹配所有数据库表,只有匹配的表才会自动生成文件 -->
+        <table tableName="sys_user" enableCountByExample="true"
+               enableUpdateByExample="true" enableDeleteByExample="true" enableSelectByExample="true" selectByExampleQueryId="true">
+            <!--如果设置为true，那么MBG会使用从数据库元数据获取的列名作为生成的实体对象的属性 为false（默认）会将返回的名称转换为驼峰模式-->
+            <property name="useActualColumnNames" value="false" />
+            <!-- generatedKey：指定自动生成主键的属性，指定这个标签，在生成的insert语句中就会添加selectKey标签，用于主键回写 -->
+            <generatedKey column="id" sqlStatement="Mysql" identity="true" />
+        </table>
+    </context>
+</generatorConfiguration>
